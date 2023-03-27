@@ -7,7 +7,7 @@ import FormField from "../components/FormField";
 import Loader from "../components/Loader";
 
 const CreatePost = () => {
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
   const [form, setForm] = useState({
     name: "",
     prompt: "",
@@ -18,14 +18,36 @@ const CreatePost = () => {
 
   const handleSubmit = () => {};
   const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.vlaue });
+    setForm({ ...form, [e.target.name]: e.target.value });
   };
   const handleSurPriseMe = () => {
     const randomPrompt = getRandomPrompt(form.prompt);
     setForm({ ...form, prompt: randomPrompt });
   };
 
-  const generateImage = () => {};
+  const generateImage = async () => {
+    if (form.prompt) {
+      try {
+        setGeneratingImg(true);
+        const response = await fetch("http://localhost:8080/api/v1/dalle", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ prompt: form.prompt }),
+        });
+
+        const data = await response.json();
+        console.log(data);
+
+        setForm({ ...form, photo: `data:image/jpeg;base64,${data.photo}` });
+      } catch (e) {
+        alert(e);
+      } finally {
+        setGeneratingImg(false);
+      }
+    } else {
+      alert("Please enter a prompt");
+    }
+  };
 
   return (
     <section className="max-w-7xl mx-auto">
@@ -50,7 +72,7 @@ const CreatePost = () => {
             LabelName="Prompt"
             type="text"
             name="prompt"
-            placeholder="  The long-lost Star Wars 1990 Japanese Anime"
+            placeholder="The long-lost Star Wars 1990 Japanese Anime"
             value={form.prompt}
             handleChange={handleChange}
             isSurpriseMe
@@ -102,5 +124,4 @@ const CreatePost = () => {
     </section>
   );
 };
-
 export default CreatePost;
