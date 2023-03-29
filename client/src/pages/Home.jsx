@@ -5,7 +5,7 @@ import Loader from "../components/Loader";
 
 const RenderCards = ({ data, title }) => {
   if (data?.length > 0) {
-    return data.map((post) => <Card key={post._id} {...post} />);
+    return data.map((item) => <Card key={item._id} {...item} />);
   }
   return (
     <h2 className="mt-5 font-bold text-[#6449ff] text-xl uppercase">{title}</h2>
@@ -32,12 +32,15 @@ const Home = () => {
           const result = await response.json();
 
           setAllPosts(result.data.reverse());
+          console.log(allPosts);
         }
       } catch (error) {
+        alert(error);
       } finally {
         setLoading(false);
       }
     };
+    fetchPosts();
   }, []);
 
   return (
